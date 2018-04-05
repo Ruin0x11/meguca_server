@@ -1,8 +1,8 @@
 #!/bin/sh
 mkfifo /tmp/inotifywait.fifo
-mkdir /srv/site/md /srv/site/build /srv/site/rendered
+mkdir -p /data/md /data/build /data/rendered
 
-inotifywait -drq -o /tmp/inotifywait.fifo -e create -e modify /srv/site/md
+inotifywait -drq -o /tmp/inotifywait.fifo -e create -e modify /data/md
 
 trap "true" PIPE
 cat /tmp/inotifywait.fifo | 
