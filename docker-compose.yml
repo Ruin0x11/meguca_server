@@ -1,5 +1,12 @@
 version: '3'
 services:
+    registry:
+      image: registry:2
+      restart: always
+      volumes:
+          - "/var/lib/registry:/var/lib/registry"
+      ports:
+        - "5000:5000"
     dnsmasq:
         build: ./dnsmasq
         cap_add:
@@ -27,6 +34,8 @@ services:
             - VIRTUAL_HOST=whoami.meguca.moe
     jenkins:
         build: ./blueocean
+        depends_on:
+            - registry
         user: "1001"
         expose:
             - "8080"
