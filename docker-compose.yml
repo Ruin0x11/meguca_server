@@ -45,3 +45,10 @@ services:
         environment:
             - VIRTUAL_HOST=aoiumi.meguca.moe
             - VIRTUAL_PORT=8080
+    site:
+        build: ./site
+        user: "1000"
+        volumes:
+            - /var/www/meguca.moe:/srv/site
+            - /etc/group:/etc/group:ro
+            - /etc/passwd:/etc/passwd:ro
