@@ -1,6 +1,6 @@
 #!/bin/sh
 mkfifo /tmp/inotifywait.fifo
-mkdir /srv/site/md /srv/site/rendered
+mkdir /srv/site/md /srv/site/build /srv/site/rendered
 
 inotifywait -drq -o /tmp/inotifywait.fifo -e create -e modify /srv/site/md
 
