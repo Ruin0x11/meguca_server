@@ -1,12 +1,18 @@
 #!/bin/sh
 mkfifo /tmp/inotifywait.fifo
-mkdir -p /data/md /data/build /data/rendered
+mkdir -p /data/site/md /data/site/build /data/site/rendered
+cp -r /data/Makefile /data/template /data/site
+cd /data/site
 
-inotifywait -drq -o /tmp/inotifywait.fifo -e create -e modify /data/md
+echo "Building site..."
+make
+
+inotifywait -drq -o /tmp/inotifywait.fifo -e create -e modify /data/site/md
 
 trap "true" PIPE
 cat /tmp/inotifywait.fifo | 
     while read path op file; do 
-        echo $path$file $op
+        echo "Rebuilding site..."
+        make
     done
 trap PIPE

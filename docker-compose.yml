@@ -49,6 +49,6 @@ services:
         build: ./site
         user: "1000"
         volumes:
-            - /var/www/meguca.moe:/data
+            - /var/www/meguca.moe:/data/site
             - /etc/group:/etc/group:ro
             - /etc/passwd:/etc/passwd:ro

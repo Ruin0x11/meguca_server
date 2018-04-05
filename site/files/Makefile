@@ -1,12 +1,12 @@
 MD := Markdown.pl
 
-CONTENT=$(wildcard *.md)
-BUILD=$(patsubst %.md,build/%.md,$(CONTENT))
-RENDERED=$(patsubst %.md,rendered/%.html,$(CONTENT))
+CONTENT=$(wildcard md/*.md)
+BUILD=$(patsubst md/%.md,build/%.md,$(CONTENT))
+RENDERED=$(patsubst md/%.md,rendered/%.html,$(CONTENT))
 
 all: $(RENDERED)
 
-build/%.md: %.md
+build/%.md: md/%.md
 	cat template/header.md $< template/footer.md > $@
 
 rendered/%.html: build/%.md
