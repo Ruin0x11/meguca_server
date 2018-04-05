@@ -32,6 +32,21 @@ services:
         image: jwilder/whoami
         environment:
             - VIRTUAL_HOST=whoami.meguca.moe
+    glances:
+        image: nicolargo/glances
+        #network_mode: host
+        #pid: host
+        expose:
+            - "61208"
+        ports:
+            - "61208:61208"
+            - "61209:61209"
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        environment:
+            - VIRTUAL_HOST=nozoku.meguca.moe
+            - VIRTUAL_PORT=61208
+            - GLANCES_OPT=-w
     jenkins:
         build: ./blueocean
         depends_on:
