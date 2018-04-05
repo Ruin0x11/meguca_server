@@ -1,0 +1,7 @@
+Description='Bond Interface'
+Interface=bond0
+Connection=bond
+BindsToInterfaces=('enp5s0f0' 'enp5s0f1')
+IP=static
+Address=('192.168.0.100/24')
+Gateway=('192.168.0.1')

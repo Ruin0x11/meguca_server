@@ -1,0 +1,14 @@
+---
+- hosts: all
+  vars:
+      resolv_nameservers:
+          - 192.168.0.100
+          - 8.8.8.8
+          - 8.8.4.4
+  roles:
+      - resolv
+  tasks:
+      - name: raise docker-compose services
+        docker_service:
+            project_src: .
+
