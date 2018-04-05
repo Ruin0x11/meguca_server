@@ -1,5 +1,17 @@
 version: '3'
 services:
+    dnsmasq:
+        build: ./dnsmasq
+        cap_add:
+            - NET_ADMIN
+        network_mode: host
+        command: --address=/meguca.moe/192.168.0.100
+        ports:
+            - "53:53"
+        volumes:
+            - "./dnsmasq/conf:/etc/dnsmasq"
+        restart: always
+
     nginx-proxy:
         image: jwilder/nginx-proxy
         ports:
