@@ -13,3 +13,14 @@ services:
         image: jwilder/whoami
         environment:
             - VIRTUAL_HOST=whoami.meguca.moe
+    jenkins:
+        build: ./blueocean
+        user: "1001"
+        expose:
+            - "8080"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /var/lib/jenkins:/var/jenkins_home
+        environment:
+            - VIRTUAL_HOST=aoiumi.meguca.moe
+            - VIRTUAL_PORT=8080
