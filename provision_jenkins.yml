@@ -1,0 +1,39 @@
+---
+- hosts: all
+  vars:
+      - jenkins_home: /var/lib/jenkins
+      - ssh_access_private_key_path: "{{ jenkins_home }}/.ssh/id_rsa"
+      - ssh_access_public_key_path: "{{ jenkins_home }}/.ssh/id_rsa.pub"
+      - jenkins_uid: 1000
+      - jenkins_gid: 1000
+  tasks:
+    - name: generate known_hosts
+      shell: "ssh-keyscan -H github.com >> {{ jenkins_home }}/.ssh/known_hosts"
+      args:
+        creates: "{{ ssh_access_private_key_path|dirname }}/known_hosts"
+
+    - file:
+        path: "{{ ssh_access_private_key_path|dirname }}"
+        state: directory
+
+    - name: generate keypair
+      shell: "ssh-keygen -t rsa -f {{ ssh_access_private_key_path }} -N ''"
+      args:
+        creates: "{{ ssh_access_private_key_path }}"
+
+    - name: Install Jenkins
+      import_role:
+          name: jenkins
+      vars:
+          install_jenkins: True
+          jenkins_home: /var/lib/jenkins
+          jenkins_admin_password: jenkins
+          jenkins_ssh_private_key: /var/lib/jenkins/.ssh/id_rsa
+          jenkins_ssh_public_key: /var/lib/jenkins/.ssh/id_rsa.pub
+
+    - name: chown as jenkins uid
+      file:
+          path: "{{ jenkins_home }}"
+          owner: "{{ jenkins_uid }}"
+          group: "{{ jenkins_gid }}"
+          recurse: yes

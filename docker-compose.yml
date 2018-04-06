@@ -35,7 +35,7 @@ services:
     glances:
         image: nicolargo/glances
         #network_mode: host
-        #pid: host
+        pid: host
         expose:
             - "61208"
         ports:
@@ -51,15 +51,15 @@ services:
         build: ./blueocean
         depends_on:
             - registry
-        user: "1001"
         expose:
             - "8080"
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
             - /var/lib/jenkins:/var/jenkins_home
+            - /var/run/docker.sock:/var/run/docker.sock
         environment:
             - VIRTUAL_HOST=aoiumi.meguca.moe
             - VIRTUAL_PORT=8080
+            - HOME=/var/jenkins_home
     site:
         build: ./site
         user: "1000"

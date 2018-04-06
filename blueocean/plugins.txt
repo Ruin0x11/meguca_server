@@ -1,0 +1,9 @@
+scm-api:latest
+git-client:latest
+git:latest
+greenballs:latest
+job-dsl:latest
+workflow-aggregator:latest
+workflow-cps:latest
+docker-workflow:latest
+blueocean:latest
