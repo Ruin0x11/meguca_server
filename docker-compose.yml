@@ -49,7 +49,7 @@ services:
         expose:
             - "8008"
         volumes:
-            - /var/www/meguca.moe:/data/site
+            - /var/www/meguca.moe/md:/data/site/md
             - /etc/group:/etc/group:ro
             - /etc/passwd:/etc/passwd:ro
         environment:

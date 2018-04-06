@@ -7,7 +7,7 @@ RENDERED=$(patsubst md/%.md,rendered/%.html,$(CONTENT))
 all: $(RENDERED)
 
 build/%.md: md/%.md
-	cat template/header.md $< template/footer.md > $@
+	cat md/template/header.md $< md/template/footer.md > $@
 
 rendered/%.html: build/%.md
 	$(MD) $< > $@
