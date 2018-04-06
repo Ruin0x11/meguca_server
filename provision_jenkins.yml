@@ -38,3 +38,24 @@
           owner: "{{ jenkins_uid }}"
           group: "{{ jenkins_gid }}"
           recurse: yes
+
+    - name: install ruby
+      pacman:
+          name: ruby
+          state: present
+
+    - gem:
+        name: rdoc
+        state: present
+      become: yes
+      become_user: ruin
+    - name: install jenkins_api_client
+      gem:
+          name: jenkins_api_client
+          state: present
+      become: yes
+      become_user: ruin
+    - name: copy jenkins_api_client login
+      copy:
+          src: ./files/login.yml
+          dest: /var/lib/jenkins/login.yml
