@@ -22,10 +22,10 @@
 
      - name: create registry directory
        file: path=/var/lib/registry state=directory
-     - name: make registry insecure and private to local network
-       copy:
-           src: ./files/daemon.json
-           dest: /etc/docker/daemon.json
+     # - name: make registry insecure and private to local network
+     # - copy:
+     # -     src: ./files/daemon.json
+     # -     dest: /etc/docker/daemon.json
      - name: start docker registry
        docker_container:
          name: registry
