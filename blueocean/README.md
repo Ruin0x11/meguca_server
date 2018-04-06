@@ -3,29 +3,9 @@ Jenkins server with docker capability.
 
 Pushes containers to a docker container running a registry, linked via `docker-compose` as `registry`.
 
-## Usage
-```yaml
-version: '3'
-services:
-    registry:
-      image: registry:2
-      restart: always
-      volumes:
-          - "/var/lib/registry:/var/lib/registry"
-      ports:
-        - "5000:5000"
+## Setup
+Run `provision_jenkins.yml` in the repo root as an Ansible playbook. Copy the pubkey it generates into the GitHub profile settings.
 
-    jenkins:
-        build: ./blueocean
-        depends_on:
-            - registry
-        user: "1001" # UID of jenkins user
-        expose:
-            - "8080"
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-            - /var/lib/jenkins:/var/jenkins_home # Owned by jenkins user
-        environment:
-            - VIRTUAL_HOST=aoiumi.meguca.moe
-            - VIRTUAL_PORT=8080
-```
+Run `raise.yml` to create the initial seed job. Edit `raise.yml` to include a list of repositories to dockerize. It assumes the repos each have a `Jenkinsfile`.
+
+Docker images can be pushed to the linked `registry` container inside the `Jenkinsfile`.
