@@ -8,4 +8,13 @@ Run `provision_jenkins.yml` in the repo root as an Ansible playbook. Copy the pu
 
 Run `raise.yml` to create the initial seed job. Edit `raise.yml` to include a list of repositories to dockerize. It assumes the repos each have a `Jenkinsfile`.
 
-Docker images can be pushed to the linked `registry` container inside the `Jenkinsfile`.
+## Troubleshooting
+
+### Host key verification failed.
+Add github.com/bitbucket.org to `/var/lib/jenkins/.ssh/known_hosts`.
+
+```
+ssh-keyscan -t rsa github.com bitbucket.org > /var/lib/jenkins/.ssh/known_hosts`
+```
+
+Also make sure `id_rsa.pub` was added to GitHub/Bitbucket account settings.

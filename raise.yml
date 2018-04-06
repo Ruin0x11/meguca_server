@@ -9,32 +9,64 @@
   roles:
       - resolv
   tasks:
-      - name: install /var/www
-        file:
-            path: "{{ item }}"
-            state: directory
-            owner: "{{ user }}"
-            group: "{{ user }}"
-            recurse: yes
-        with_items:
-            - /var/www
-            - /var/www/meguca.moe
-      - name: create registry directory
-        file: path=/var/lib/registry state=directory
+     - name: install /var/www
+       file:
+           path: "{{ item }}"
+           state: directory
+           owner: "{{ user }}"
+           group: "{{ user }}"
+           recurse: yes
+       with_items:
+           - /var/www
+           - /var/www/meguca.moe
+     - name: create registry directory
+       file: path=/var/lib/registry state=directory
+ 
+     - name: start docker registry
+       docker_container:
+         name: registry
+         image: registry:2
+         restart_policy: always
+         volumes:
+             - "/var/lib/registry:/var/lib/registry"
+         ports:
+           - "5000:5000"
 
-      - name: raise docker-compose services
-        docker_service:
-            project_src: .
+     - name: build dnsmasq
+       docker_image:
+           name: dnsmasq
+           path: ./dnsmasq
+           repository: localhost:5000/dnsmasq
+           tag: v1
+           push: yes
 
-      - name: Configure jenkins
-        import_role:
-            name: jenkins
-        vars:
-            jenkins_admin_password: jenkins
-            jenkins_ssh_private_key: /var/lib/jenkins/jenkins-id_rsa
-            jenkins_ssh_public_key: /var/lib/jenkins/jenkins-id_rsa.pub
-            jenkins_git_user: git
-            jenkins_git_host: github.com
-            jenkins_git_path: Ruin0x11
-            jenkins_git_repositories:
-                - scribl
+     - name: run dnsmasq
+       docker_container:
+         name: dnsmasq
+         image: localhost:5000/dnsmasq:v1
+         capabilities:
+             - NET_ADMIN
+         network_mode: host
+         command: --address=/meguca.moe/192.168.0.100
+         ports:
+             - "53:53"
+         volumes:
+             - "./dnsmasq/conf:/etc/dnsmasq"
+         restart_policy: always
+
+     - name: raise docker-compose services
+       docker_service:
+           project_src: .
+
+     - name: Configure jenkins
+       import_role:
+           name: jenkins
+       vars:
+           jenkins_admin_password: jenkins
+           jenkins_ssh_private_key: /var/lib/jenkins/jenkins-id_rsa
+           jenkins_ssh_public_key: /var/lib/jenkins/jenkins-id_rsa.pub
+           jenkins_git_user: git
+           jenkins_git_host: github.com
+           jenkins_git_path: Ruin0x11
+           jenkins_git_repositories:
+               - scribl

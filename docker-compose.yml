@@ -1,24 +1,5 @@
 version: '3'
 services:
-    registry:
-      image: registry:2
-      restart: always
-      volumes:
-          - "/var/lib/registry:/var/lib/registry"
-      ports:
-        - "5000:5000"
-    dnsmasq:
-        build: ./dnsmasq
-        cap_add:
-            - NET_ADMIN
-        network_mode: host
-        command: --address=/meguca.moe/192.168.0.100
-        ports:
-            - "53:53"
-        volumes:
-            - "./dnsmasq/conf:/etc/dnsmasq"
-        restart: always
-
     nginx-proxy:
         image: jwilder/nginx-proxy
         ports:
@@ -32,6 +13,7 @@ services:
         image: jwilder/whoami
         environment:
             - VIRTUAL_HOST=whoami.meguca.moe
+
     glances:
         image: nicolargo/glances
         #network_mode: host
@@ -47,10 +29,9 @@ services:
             - VIRTUAL_HOST=nozoku.meguca.moe
             - VIRTUAL_PORT=61208
             - GLANCES_OPT=-w
+
     jenkins:
         build: ./blueocean
-        depends_on:
-            - registry
         expose:
             - "8080"
         volumes:
@@ -60,10 +41,31 @@ services:
             - VIRTUAL_HOST=aoiumi.meguca.moe
             - VIRTUAL_PORT=8080
             - HOME=/var/jenkins_home
+
     site:
         build: ./site
         user: "1000"
+        expose:
+            - "8008"
         volumes:
             - /var/www/meguca.moe:/data/site
             - /etc/group:/etc/group:ro
             - /etc/passwd:/etc/passwd:ro
+        environment:
+            - VIRTUAL_HOST=meguca.moe
+            - VIRTUAL_PORT=8008
+
+    scribl:
+        image: localhost:5000/scribl
+        depends_on: 
+          - scribl_db
+        command: rackup -p 3001 --host 0.0.0.0
+        expose:
+            - "3001"
+        ports:
+            - "3001:3001"
+        environment:
+            - VIRTUAL_HOST=scribl.meguca.moe
+    scribl_db:
+        image: postgres
+

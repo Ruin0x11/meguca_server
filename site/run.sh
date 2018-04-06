@@ -7,6 +7,9 @@ cd /data/site
 echo "Building site..."
 make
 
+echo "Starting nginx..."
+nginx
+
 inotifywait -drq -o /tmp/inotifywait.fifo -e create -e modify /data/site/md
 
 trap "true" PIPE
