@@ -7,3 +7,4 @@ workflow-aggregator:latest
 workflow-cps:latest
 docker-workflow:latest
 blueocean:latest
+cloudbees-bitbucket-branch-source:latest

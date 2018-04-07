@@ -70,7 +70,6 @@
            jenkins_ssh_private_key: /var/lib/jenkins/jenkins-id_rsa
            jenkins_ssh_public_key: /var/lib/jenkins/jenkins-id_rsa.pub
            jenkins_git_user: git
-           jenkins_git_host: github.com
-           jenkins_git_path: Ruin0x11
            jenkins_git_repositories:
-               - scribl
+               - { host: 'github.com', path: 'Ruin0x11', name: 'scribl' }
+               - { host: 'bitbucket.org', path: 'Ruin0x11', name: 'megucabooru' }
