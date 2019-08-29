@@ -6,7 +6,7 @@
 
 # The IP address of the Jenkins CI Server
 
-:server_ip: aoiumi.meguca.moe
+:server_ip: aoiumi.nori.daikon
 
 # The port number on which the Jenkins listens on. The default is 8080
 

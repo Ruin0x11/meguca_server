@@ -18,7 +18,8 @@
            recurse: yes
        with_items:
            - /var/www
-           - /var/www/meguca.moe
+           - /var/www/nori.moe
+           - /var/www/nori.daikon
 
      - name: create registry directory
        file: path=/var/lib/registry state=directory
@@ -51,7 +52,7 @@
          capabilities:
              - NET_ADMIN
          network_mode: host
-         command: --address=/meguca.moe/192.168.0.100
+         command: --address=/nori.moe/192.168.0.100
          ports:
              - "53:53"
          volumes:
@@ -62,14 +63,13 @@
        docker_service:
            project_src: .
 
-     - name: Configure jenkins
-       import_role:
-           name: jenkins
-       vars:
-           jenkins_admin_password: jenkins
-           jenkins_ssh_private_key: /var/lib/jenkins/jenkins-id_rsa
-           jenkins_ssh_public_key: /var/lib/jenkins/jenkins-id_rsa.pub
-           jenkins_git_user: git
-           jenkins_git_repositories:
-               - { host: 'github.com', path: 'Ruin0x11', name: 'scribl' }
-               - { host: 'bitbucket.org', path: 'Ruin0x11', name: 'megucabooru' }
+           #- name: Configure jenkins
+           #  import_role:
+           #      name: jenkins
+           #  vars:
+           #      jenkins_admin_password: jenkins
+           #      jenkins_ssh_private_key: /var/lib/jenkins/jenkins-id_rsa
+           #      jenkins_ssh_public_key: /var/lib/jenkins/jenkins-id_rsa.pub
+           #      jenkins_git_user: git
+           #      jenkins_git_repositories:
+           #          - { host: 'github.com', path: 'Ruin0x11', name: 'scribl' }

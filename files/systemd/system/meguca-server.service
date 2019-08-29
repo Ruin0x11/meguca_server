@@ -1,5 +1,5 @@
 [Unit]
-Description=Run meguca docker services at startup
+Description=Run nori docker services at startup
 After=docker.service network-online.target
 Requires=docker.service network-online.target
 

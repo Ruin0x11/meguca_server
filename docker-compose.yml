@@ -1,4 +1,8 @@
 version: '3'
+networks:
+  misaka:
+    external: true
+
 services:
     nginx-proxy:
         image: jwilder/nginx-proxy
@@ -9,10 +13,16 @@ services:
             - /var/run/docker.sock:/tmp/docker.sock:ro
             - /etc/nginx/vhost.d
             - /usr/share/nginx/html
+            - /etc/nginx/certs:/etc/nginx/certs
+        networks:
+          - misaka
+
     whoami:
         image: jwilder/whoami
         environment:
-            - VIRTUAL_HOST=whoami.meguca.moe
+            - VIRTUAL_HOST=whoami.nori.moe
+        networks:
+          - misaka
 
     glances:
         image: nicolargo/glances
@@ -26,47 +36,86 @@ services:
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
         environment:
-            - VIRTUAL_HOST=nozoku.meguca.moe
+            - VIRTUAL_HOST=nozoku.nori.daikon
             - VIRTUAL_PORT=61208
-            - GLANCES_OPT=-w
-
-    jenkins:
-        build: ./blueocean
-        expose:
-            - "8080"
-        volumes:
-            - /var/lib/jenkins:/var/jenkins_home
-            - /var/run/docker.sock:/var/run/docker.sock
-        environment:
-            - VIRTUAL_HOST=aoiumi.meguca.moe
-            - VIRTUAL_PORT=8080
             - NETWORK_ACCESS=internal
-            - HOME=/var/jenkins_home
+            - GLANCES_OPT=-w
+        networks:
+          - misaka
 
-    site:
-        build: ./site
-        user: "1000"
-        expose:
-            - "8008"
-        volumes:
-            - /var/www/meguca.moe/md:/data/site/md
-            - /etc/group:/etc/group:ro
-            - /etc/passwd:/etc/passwd:ro
-        environment:
-            - VIRTUAL_HOST=meguca.moe
-            - VIRTUAL_PORT=8008
+    shaarli:
+      image: shaarli/shaarli
+      volumes:
+          - /mnt/hibiki/config/shaarli/cache:/var/www/shaarli/cache
+          - /mnt/hibiki/config/shaarli/data:/var/www/shaarli/data
+          - /mnt/hibiki/config/shaarli/tpl:/var/www/shaarli/tpl
+      environment:
+          - VIRTUAL_HOST=share.nori.moe
+      networks:
+        - misaka
 
-    scribl:
-        image: localhost:5000/scribl
-        depends_on: 
-          - scribl_db
-        command: rackup -p 3001 --host 0.0.0.0
-        expose:
-            - "3001"
-        ports:
-            - "3001:3001"
-        environment:
-            - VIRTUAL_HOST=scribl.meguca.moe
-    scribl_db:
-        image: postgres
+    plex:
+      image: plexinc/pms-docker
+      expose:
+        - "32400"
+      ports:
+        - "32400:32400"
+        - "3005:3005"
+        - "8324:8324"
+        - "32469:32469"
+        - "1900:1900"
+        - "32410:32410"
+        - "32412:32412"
+        - "32413:32413"
+        - "32414:32414"
+      volumes:
+        - /mnt/hibiki/config/plex/config:/config
+        - /mnt/hibiki/config/plex/transcode:/transcode
+        - /mnt/hibiki:/data
+      environment:
+        - HOSTNAME="plex"
+        - TZ="America/Los_Angeles"
+        - ADVERTISE_IP="http://192.168.1.100:32400/"
+        - VIRTUAL_HOST=plex.nori.moe
+        - VIRTUAL_PORT=32400
 
+
+              # jenkins:
+              #     build: ./blueocean
+              #     expose:
+              #         - "8080"
+              #     volumes:
+              #         - /var/lib/jenkins:/var/jenkins_home
+              #         - /var/run/docker.sock:/var/run/docker.sock
+              #     environment:
+              #         - VIRTUAL_HOST=aoiumi.nori.moe
+              #         - VIRTUAL_PORT=8080
+              #         - NETWORK_ACCESS=internal
+              #         - HOME=/var/jenkins_home
+              #
+              # site:
+              #     build: ./site
+              #     user: "1000"
+              #     expose:
+              #         - "8008"
+              #     volumes:
+              #         - /var/www/nori.moe/md:/data/site/md
+              #         - /etc/group:/etc/group:ro
+              #         - /etc/passwd:/etc/passwd:ro
+              #     environment:
+              #         - VIRTUAL_HOST=nori.daikon
+              #         - VIRTUAL_PORT=8008
+
+              # scribl:
+              #     build: ./scribl
+              #     depends_on:
+              #       - scribl_db
+              #     command: rackup -p 3001 --host 0.0.0.0
+              #     expose:
+              #         - "3001"
+              #     ports:
+              #         - "3001:3001"
+              #     environment:
+              #         - VIRTUAL_HOST=scribl.nori.moe
+              # scribl_db:
+              #     image: postgres
