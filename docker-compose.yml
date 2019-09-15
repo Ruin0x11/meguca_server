@@ -4,6 +4,19 @@ networks:
     external: true
 
 services:
+    # dnsmasq:
+    #    image: localhost:5000/dnsmasq:v1
+    #    cap_add:
+    #        - NET_ADMIN
+    #    network_mode: host
+    #    command: --address=/.nori.daikon/192.168.0.100
+    #    ports:
+    #        - "53:53/tcp"
+    #        - "53:53/udp"
+    #    volumes:
+    #        - "./dnsmasq/conf:/etc/dnsmasq"
+    #    restart: always
+
     nginx-proxy:
         image: jwilder/nginx-proxy
         ports:
@@ -56,28 +69,30 @@ services:
 
     plex:
       image: plexinc/pms-docker
-      expose:
-        - "32400"
-      ports:
-        - "32400:32400"
-        - "3005:3005"
-        - "8324:8324"
-        - "32469:32469"
-        - "1900:1900"
-        - "32410:32410"
-        - "32412:32412"
-        - "32413:32413"
-        - "32414:32414"
+      #expose:
+      #  - "32400"
+      #ports:
+      #  - "32400:32400"
+      #  - "3005:3005"
+      #  - "8324:8324"
+      #  - "32469:32469"
+      #  - "1900:1900"
+      #  - "32410:32410"
+      #  - "32412:32412"
+      #  - "32413:32413"
+      #  - "32414:32414"
+      network_mode: host
       volumes:
         - /mnt/hibiki/config/plex/config:/config
         - /mnt/hibiki/config/plex/transcode:/transcode
         - /mnt/hibiki:/data
+        - /var/run/docker.sock:/tmp/docker.sock:ro
       environment:
-        - HOSTNAME="plex"
+        #- HOSTNAME="plex"
         - TZ="America/Los_Angeles"
-        - ADVERTISE_IP="http://192.168.1.100:32400/"
-        - VIRTUAL_HOST=plex.nori.moe
-        - VIRTUAL_PORT=32400
+        #- ADVERTISE_IP="http://192.168.1.100:32400/"
+        #- VIRTUAL_HOST=plex.nori.moe
+        #- VIRTUAL_PORT=32400
 
 
               # jenkins:
@@ -119,3 +134,16 @@ services:
               #         - VIRTUAL_HOST=scribl.nori.moe
               # scribl_db:
               #     image: postgres
+
+    emby:
+      image: emby/embyserver
+      ports:
+          - "8096:8096"
+      networks:
+          - misaka
+      volumes:
+          - /mnt/hibiki/config/emby:/config
+          - /mnt/hibiki:/mnt/share
+      environment:
+          - VIRTUAL_HOST=emby.nori.daikon
+          - VIRTUAL_PORT=8096
