@@ -19,21 +19,43 @@ services:
 
     nginx-proxy:
         image: jwilder/nginx-proxy
+        container_name: nginx-proxy
+        labels:
+          - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
         ports:
             - "80:80"
             - "443:443"
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
             - /etc/nginx/vhost.d
+            - /etc/nginx/htpasswd:/etc/nginx/htpasswd
             - /usr/share/nginx/html
             - /etc/nginx/certs:/etc/nginx/certs
         networks:
           - misaka
 
+    letsencrypt:
+        image: jrcs/letsencrypt-nginx-proxy-companion:v1.7
+        container_name: letsencrypt
+        restart: always
+        depends_on:
+            - nginx-proxy
+        volumes:
+          - /var/run/docker.sock:/tmp/docker.sock:ro
+          - /etc/nginx/vhost.d
+          - /etc/nginx/htpasswd:/etc/nginx/htpasswd
+          - /usr/share/nginx/html
+          - /etc/nginx/certs:/etc/nginx/certs:rw
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+        environment:
+          - REUSE_PRIVATE_KEYS=true
+          - DEFAULT_EMAILL=ipickering2@gmail.com
+
     whoami:
         image: jwilder/whoami
         environment:
             - VIRTUAL_HOST=whoami.nori.moe
+            - LETSENCRYPT_HOST=whoami.nori.moe
         networks:
           - misaka
 
@@ -64,6 +86,7 @@ services:
           - /mnt/hibiki/config/shaarli/tpl:/var/www/shaarli/tpl
       environment:
           - VIRTUAL_HOST=share.nori.moe
+          - LETSENCRYPT_HOST=share.nori.moe
       networks:
         - misaka
 
@@ -143,7 +166,51 @@ services:
           - misaka
       volumes:
           - /mnt/hibiki/config/emby:/config
-          - /mnt/hibiki:/mnt/share
+          - /mnt/hibiki/video:/mnt/share
+          - /mnt/hibiki/voice:/mnt/share2
       environment:
-          - VIRTUAL_HOST=emby.nori.daikon
-          - VIRTUAL_PORT=8096
+        - VIRTUAL_HOST=emby.nori.daikon
+        - VIRTUAL_PORT=8096
+        - UID=1000
+        - GID=1000
+
+    html-server:
+      image: localhost:5000/html-server:v1
+      ports:
+          - "800:80"
+      networks:
+          - misaka
+      environment:
+        - VIRTUAL_HOST=nori.moe
+        - VIRTUAL_PORT=80
+        - UID=1000
+        - GID=1000
+
+    wiki:
+      image: bitnami/dokuwiki
+      ports:
+          - "5001:80"
+          - "5002:443"
+      networks:
+          - misaka
+      volumes:
+          - /mnt/hibiki/config/dokuwiki:/bitnami
+      environment:
+        - VIRTUAL_HOST=wiki.nori.moe
+        - VIRTUAL_PORT=80
+        - LETSENCRYPT_HOST=wiki.nori.moe
+        - UID=1000
+        - GID=1000
+
+    litewrite:
+      image: localhost:5000/litewrite
+      ports:
+          - "5003:8080"
+      networks:
+          - misaka
+      environment:
+        - VIRTUAL_HOST=write.nori.moe
+        - VIRTUAL_PORT=8080
+        - LETSENCRYPT_HOST=write.nori.moe
+        - UID=1000
+        - GID=1000
