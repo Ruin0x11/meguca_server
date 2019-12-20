@@ -45,6 +45,14 @@
            tag: v1
            push: yes
 
+     - name: build server
+       docker_image:
+           name: html-server
+           path: ./site2
+           repository: localhost:5000/html-server
+           tag: v1
+           push: yes
+
      - name: raise docker-compose services
        docker_service:
            project_src: .

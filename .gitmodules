@@ -7,3 +7,6 @@
 [submodule "szurubooru"]
 	path = szurubooru
 	url = https://github.com/rr-/szurubooru
+[submodule "app/synapse"]
+	path = app/synapse
+	url = https://github.com/Luminarys/synapse

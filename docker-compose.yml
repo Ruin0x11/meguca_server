@@ -4,18 +4,10 @@ networks:
     external: true
 
 services:
-    # dnsmasq:
-    #    image: localhost:5000/dnsmasq:v1
-    #    cap_add:
-    #        - NET_ADMIN
-    #    network_mode: host
-    #    command: --address=/.nori.daikon/192.168.0.100
-    #    ports:
-    #        - "53:53/tcp"
-    #        - "53:53/udp"
-    #    volumes:
-    #        - "./dnsmasq/conf:/etc/dnsmasq"
-    #    restart: always
+    watchtower:
+        image: containrrr/watchtower
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
 
     nginx-proxy:
         image: jwilder/nginx-proxy
@@ -27,29 +19,35 @@ services:
             - "443:443"
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
-            - /etc/nginx/vhost.d
             - /etc/nginx/htpasswd:/etc/nginx/htpasswd
-            - /usr/share/nginx/html
             - /etc/nginx/certs:/etc/nginx/certs
+            - vhost:/etc/nginx/vhost.d
+            - html:/usr/share/nginx/html
+            - ./files/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf
         networks:
           - misaka
+        environment:
+          - HTTPS_METHOD=noredirect
 
     letsencrypt:
-        image: jrcs/letsencrypt-nginx-proxy-companion:v1.7
+        image: jrcs/letsencrypt-nginx-proxy-companion:latest
         container_name: letsencrypt
         restart: always
         depends_on:
             - nginx-proxy
         volumes:
           - /var/run/docker.sock:/tmp/docker.sock:ro
-          - /etc/nginx/vhost.d
           - /etc/nginx/htpasswd:/etc/nginx/htpasswd
-          - /usr/share/nginx/html
           - /etc/nginx/certs:/etc/nginx/certs:rw
           - /var/run/docker.sock:/var/run/docker.sock:ro
+          - vhost:/etc/nginx/vhost.d
+          - html:/usr/share/nginx/html
+        networks:
+          - misaka
         environment:
           - REUSE_PRIVATE_KEYS=true
-          - DEFAULT_EMAILL=ipickering2@gmail.com
+          - DEFAULT_EMAIL=ipickering2@gmail.com
+          - DEBUG=true
 
     whoami:
         image: jwilder/whoami
@@ -202,15 +200,39 @@ services:
         - UID=1000
         - GID=1000
 
-    litewrite:
-      image: localhost:5000/litewrite
+    lanraragi:
+      image: difegue/lanraragi
       ports:
-          - "5003:8080"
+          - "3000:3000"
+      networks:
+          - misaka
+      volumes:
+          - /mnt/hibiki/araragi:/home/koyomi/lanraragi/content
+      environment:
+        - VIRTUAL_HOST=araragi.nori.daikon
+        - VIRTUAL_PORT=3000
+        - LRR_UID=1000
+        - LRR_GID=1000
+
+    elona-js:
+      image: localhost:5000/elona-js:v1
       networks:
           - misaka
       environment:
-        - VIRTUAL_HOST=write.nori.moe
-        - VIRTUAL_PORT=8080
-        - LETSENCRYPT_HOST=write.nori.moe
+        - VIRTUAL_HOST=elonajs.nori.moe
+        - VIRTUAL_PORT=80
+        - LETSENCRYPT_HOST=elonajs.nori.moe
         - UID=1000
         - GID=1000
+
+    synapse:
+      image: localhost:5000/synapse
+      networks:
+          - misaka
+      environment:
+        - UID=1000
+        - GID=1000
+          
+volumes:
+    vhost:
+    html:
