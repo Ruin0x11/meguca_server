@@ -214,10 +214,23 @@ services:
         - LRR_UID=1000
         - LRR_GID=1000
 
-    elona-js:
-      image: localhost:5000/elona-js:v1
+    manga:
+      image: difegue/lanraragi
       networks:
-          - misaka
+        - misaka
+      volumes:
+        - /mnt/hibiki/manga:/home/koyomi/lanraragi/content
+      environment:
+        - VIRTUAL_HOST=manga.nori.moe
+        - VIRTUAL_PORT=3000
+        - LETSENCRYPT_HOST=manga.nori.moe
+        - LRR_UID=1000
+        - LRR_GID=1000
+
+    elona-js:
+      image: localhost:5000/elona-js:latest
+      networks:
+        - misaka
       environment:
         - VIRTUAL_HOST=elonajs.nori.moe
         - VIRTUAL_PORT=80
@@ -229,10 +242,38 @@ services:
       image: localhost:5000/synapse
       networks:
           - misaka
+      expose:
+          - "16493:16493"
+          - "8412:8412"
+          - "16362:16362"
+          - "16309:16309"
+      volumes:
+          - /mnt/hibiki/synapse:/synapse/downloads
       environment:
         - UID=1000
         - GID=1000
-          
+
+    synapse:
+      image: localhost:5000/synapse
+      networks:
+          - misaka
+      environment:
+        - NETWORK_ACCESS=internal
+        - UID=1000
+        - GID=1000
+
+    receptor:
+      image: localhost:5000/receptor
+      networks:
+          - misaka
+      environment:
+        - VIRTUAL_HOST=receptor.nori.moe
+        - VIRTUAL_PORT=3000
+        - NETWORK_ACCESS=internal
+        - HTTPS_METHOD=noredirect
+        - UID=1000
+        - GID=1000
+
 volumes:
     vhost:
     html:

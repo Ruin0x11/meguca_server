@@ -10,3 +10,10 @@
 [submodule "app/synapse"]
 	path = app/synapse
 	url = https://github.com/Luminarys/synapse
+[submodule "app/receptor"]
+	path = app/receptor
+	url = https://git.sr.ht/~sircmpwn/receptor
+[submodule "app/invidious"]
+	path = app/invidious
+	url = git://github.com/Ruin0x11/invidious.git
+	branch = player-controls
