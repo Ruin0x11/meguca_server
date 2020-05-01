@@ -1,10 +1,10 @@
 body {
-    background-image: url("nori.png");
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
     overflow: hidden;
+    background-color: #678ea0;
 }
 
 .container {
@@ -12,12 +12,20 @@ body {
     font-family: Helvetica;
     font-weight: bold;
     color: white;
-    text-shadow: 4px 4px 9px black;
+    text-shadow: 3px 3px 4px #444444;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100vh;
+}
+
+#nori-san {
+    position: fixed;
+    bottom: 0; /* your required value */
+    left: 0;
+    width: 22em;
+    height: inherit;
 }
 
 @media (max-width: 1200px) {

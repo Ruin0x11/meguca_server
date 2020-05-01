@@ -21,8 +21,8 @@ services:
             - /var/run/docker.sock:/tmp/docker.sock:ro
             - /etc/nginx/htpasswd:/etc/nginx/htpasswd
             - /etc/nginx/certs:/etc/nginx/certs
-            - vhost:/etc/nginx/vhost.d
-            - html:/usr/share/nginx/html
+            - /etc/nginx/vhost.d:/etc/nginx/vhost.d:rw
+            - ./files/html:/var/www
             - ./files/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf
         networks:
           - misaka
@@ -36,12 +36,12 @@ services:
         depends_on:
             - nginx-proxy
         volumes:
-          - /var/run/docker.sock:/tmp/docker.sock:ro
-          - /etc/nginx/htpasswd:/etc/nginx/htpasswd
-          - /etc/nginx/certs:/etc/nginx/certs:rw
-          - /var/run/docker.sock:/var/run/docker.sock:ro
-          - vhost:/etc/nginx/vhost.d
-          - html:/usr/share/nginx/html
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /etc/nginx/htpasswd:/etc/nginx/htpasswd
+            - /etc/nginx/certs:/etc/nginx/certs
+            - /etc/nginx/vhost.d:/etc/nginx/vhost.d:rw
+            - ./files/html:/usr/share/nginx/html
+            - ./files/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf
         networks:
           - misaka
         environment:
@@ -200,6 +200,21 @@ services:
         - UID=1000
         - GID=1000
 
+    wiki2:
+      image: marcelhuberfoo/docker-gitit
+      ports:
+        - "49157:5001"
+      networks:
+        - misaka
+      volumes:
+        - /mnt/hibiki/config/gitit:/data
+      environment:
+        - VIRTUAL_HOST=wiki2.nori.daikon
+        - VIRTUAL_PORT=5001
+        - LETSENCRYPT_HOST=wiki2.nori.daikon
+        - GIT_COMMITTER_NAME=ruin
+        - GIT_COMMITTER_EMAIL=ruin@nori.moe
+
     lanraragi:
       image: difegue/lanraragi
       ports:
@@ -215,20 +230,27 @@ services:
         - LRR_GID=1000
 
     manga:
-      image: difegue/lanraragi
+      image: gotson/komga
       networks:
         - misaka
       volumes:
-        - /mnt/hibiki/manga:/home/koyomi/lanraragi/content
+        - /mnt/hibiki/manga:/books/manga
+        - /mnt/hibiki/araragi:/books/araragi
+        - /mnt/hibiki/config/komga:/config
+        - /etc/timezone:/etc/timezone
+      user: "1000:1000"
+      ports:
+          - "8084:8080"
+      expose:
+          - "8080"
       environment:
-        - VIRTUAL_HOST=manga.nori.moe
-        - VIRTUAL_PORT=3000
+        - VIRTUAL_HOST=manga.nori.daikon
+        - VIRTUAL_PORT=8080
         - LETSENCRYPT_HOST=manga.nori.moe
-        - LRR_UID=1000
-        - LRR_GID=1000
+        - KOMGA_LIBRARIES_SCAN_DIRECTORY_EXCLUSIONS=#recycle,@eaDir
 
     elona-js:
-      image: localhost:5000/elona-js:latest
+      image: localhost:5000/elona-js:v1
       networks:
         - misaka
       environment:
@@ -271,6 +293,17 @@ services:
         - VIRTUAL_PORT=3000
         - NETWORK_ACCESS=internal
         - HTTPS_METHOD=noredirect
+        - UID=1000
+        - GID=1000
+
+    site2:
+      build: ./site2
+      networks:
+        - misaka
+      environment:
+        - VIRTUAL_HOST=nori.moe
+        - VIRTUAL_PORT=80
+        - LETSENCRYPT_HOST=nori.moe
         - UID=1000
         - GID=1000
 
