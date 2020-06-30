@@ -286,9 +286,10 @@ services:
       expose:
           - "8080"
       environment:
-        - VIRTUAL_HOST=manga.nori.daikon
+        - VIRTUAL_HOST=manga.nori.moe
         - VIRTUAL_PORT=8080
         - LETSENCRYPT_HOST=manga.nori.moe
+        - HTTPS_METHOD=noredirect
         - KOMGA_LIBRARIES_SCAN_DIRECTORY_EXCLUSIONS=#recycle,@eaDir
 
     # elona-js:
