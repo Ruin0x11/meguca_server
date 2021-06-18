@@ -17,3 +17,6 @@
 	path = app/invidious
 	url = git://github.com/Ruin0x11/invidious.git
 	branch = player-controls
+[submodule "app/niacademy"]
+	path = app/niacademy
+	url = https://github.com/ruin0x11/niacademy
