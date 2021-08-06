@@ -124,20 +124,20 @@ services:
 
     plex:
       image: plexinc/pms-docker
-      expose:
-        - "32400"
-      #ports:
-      #  - "32400:32400"
-      #  - "3005:3005"
-      #  - "8324:8324"
-      #  - "32469:32469"
-      #  - "1900:1900"
-      #  - "32410:32410"
-      #  - "32412:32412"
-      #  - "32413:32413"
-      #  - "32414:32414"
-      networks:
-        - misaka
+        # expose:
+        #   - "32400"
+        # ports:
+        #   - "32400:32400/tcp"
+        #   - "1900:1900/udp"
+        #   - "3005:3005/tcp"
+        #   - "5353:5353/udp"
+        #   - "8324:8324/tcp"
+        #   - "32410:32410/udp"
+        #   - "32412-32414:32412-32414/udp"
+        #   - "32469:32469/tcp"
+          #networks:
+          #- misaka
+      network_mode: host
       volumes:
         - /mnt/hibiki/config/plex/config:/config
         - /mnt/hibiki/config/plex/transcode:/transcode
@@ -146,7 +146,7 @@ services:
       environment:
         - HOSTNAME="plex"
         - TZ="America/Los_Angeles"
-        #- ADVERTISE_IP="http://192.168.1.100:32400/"
+        # - ADVERTISE_IP="https://plex.nori.moe/"
         - VIRTUAL_HOST=plex.nori.moe
         - VIRTUAL_PORT=32400
         - LETSENCRYPT_HOST=plex.nori.moe
@@ -454,7 +454,7 @@ services:
       container_name: radarr
       environment:
         - PUID=1000
-        - PGID=100
+        - PGID=1000
         - TZ=America/Los_Angeles
         - VIRTUAL_HOST=radarr.nori.moe
         - VIRTUAL_PORT=7878
@@ -473,7 +473,7 @@ services:
       container_name: jackett
       environment:
         - PUID=1000
-        - PGID=100
+        - PGID=1000
         - TZ=America/Los_Angeles
         - AUTO_UPDATE=true #optional
         # - RUN_OPTS=<run options here> #optional
@@ -496,7 +496,7 @@ services:
       container_name: deluge
       environment:
         - PUID=1000
-        - PGID=100
+        - PGID=1000
         - TZ=America/Los_Angeles
         #- UMASK_SET=000 #optional
         #- DELUGE_LOGLEVEL=error #optional
